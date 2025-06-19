@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile | Beyond90</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/style/main.css">
+  <script>
+    function showBioForm() {
+      document.getElementById("bioDisplay").style.display = "none";
+      document.getElementById("bioForm").style.display = "block";
+    }
+    function showPhotoForm() {
+      document.getElementById("photoForm").style.display = "block";
+      document.getElementById("changePhotoBtn").style.display = "none";
+    }
+  </script>
+</head>
+
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="card shadow p-4">
+      <h2 class="mb-4 text-primary">User Profile</h2>
+
+      <div class="d-flex align-items-center mb-3">
+        <% if (user.profile_photo_url) { %>
+          <img src="<%= user.profile_photo_url %>" alt="Profile Photo" class="rounded-circle me-3" width="80"
+            height="80">
+          <% } else { %>
+            <div class="rounded-circle bg-secondary me-3" style="width: 80px; height: 80px;"></div>
+            <% } %>
+
+              <div>
+                <h4>
+                  <%= user.username %>
+                </h4>
+
+                <% if (!isOwnProfile) { %>
+                  <form action="<%= isFollowing ? '/unfollow/' + user.id : '/follow/' + user.id %>" method="POST"
+                    style="display:inline;">
+                    <button type="submit" class="btn btn-sm <%= isFollowing ? 'btn-danger' : 'btn-outline-primary' %>">
+                      <%= isFollowing ? 'Unfollow' : 'Follow' %>
+                    </button>
+                  </form>
+                  <% } %>
+
+                    <button class="btn btn-outline-secondary btn-sm" onclick="toggleModal('followersModal')">
+                      Followers (<%= followers.length %>)
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="toggleModal('followingModal')">
+                      Following (<%= following.length %>)
+                    </button>
+              </div>
+      </div>
+
+
+
+      <p><strong>Email:</strong>
+        <%= user.email %>
+      </p>
+      <p><strong>Joined:</strong>
+        <%= new Date(user.created_at).toLocaleDateString() %>
+      </p>
+
+      <h5 class="mt-4">Bio</h5>
+      <div id="bioDisplay">
+        <% if (user.bio) { %>
+          <p>
+            <%= user.bio %>
+          </p>
+          <% } else { %>
+            <p class="text-muted">No bio yet.</p>
+            <% } %>
+
+              <% if (isOwnProfile) { %> <!-- Only show button if viewing own profile -->
+                <button class="btn btn-sm btn-primary mt-2" onclick="showBioForm()">Update Bio</button>
+                <% } %>
+      </div>
+
+      <% if (isOwnProfile) { %> <!-- Only show form to profile owner -->
+        <form id="bioForm" action="/update-bio" method="POST" style="display: none;" class="mt-2">
+          <textarea name="bio" class="form-control" rows="3" placeholder="Write your bio..." required>
+      <%= user.bio || '' %>
+    </textarea>
+          <button type="submit" class="btn btn-success mt-2">Save Bio</button>
+        </form>
+        <% } %>
+
+          <% if (isOwnProfile) { %>
+            <h5 class="mt-4">Profile Photo</h5>
+            <div>
+              <button class="btn btn-sm btn-warning" id="changePhotoBtn" onclick="showPhotoForm()">Change Photo</button>
+              <form id="photoForm" action="/update-photo" method="POST" enctype="multipart/form-data"
+                style="display: none;" class="mt-2">
+                <input type="file" name="profilePhoto" accept="image/*" class="form-control" required>
+                <button type="submit" class="btn btn-success mt-2">Upload Photo</button>
+              </form>
+            </div>
+            <% } %>
+    </div>
+
+
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <h4>Liked Posts</h4>
+        <% if (likedPosts.length===0) { %>
+          <p class="text-muted">No liked posts yet.</p>
+          <% } else { %>
+            <ul class="list-group">
+              <% likedPosts.forEach(post=> { %>
+                <li class="list-group-item">
+                  <a href="/blogs#post-<%= post.id %>">
+                    <%= post.title %>
+                  </a>
+                </li>
+                <% }) %>
+            </ul>
+            <% } %>
+      </div>
+
+      <div class="col-md-4">
+        <h4>Bookmarked Posts</h4>
+        <% if (bookmarkedPosts.length===0) { %>
+          <p class="text-muted">No bookmarks yet.</p>
+          <% } else { %>
+            <ul class="list-group">
+              <% bookmarkedPosts.forEach(post=> { %>
+                <li class="list-group-item">
+                  <a href="/blogs#post-<%= post.id %>">
+                    <%= post.title %>
+                  </a>
+                </li>
+                <% }) %>
+            </ul>
+            <% } %>
+      </div>
+
+      <div class="col-md-4">
+        <h4>Commented Posts</h4>
+        <% if (commentedPosts.length===0) { %>
+          <p class="text-muted">No comments yet.</p>
+          <% } else { %>
+            <ul class="list-group">
+              <% commentedPosts.forEach(post=> { %>
+                <li class="list-group-item">
+                  <a href="/blogs#post-<%= post.id %>">
+                    <%= post.title %>
+                  </a>
+                </li>
+                <% }) %>
+            </ul>
+            <% } %>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/blogs" class="btn btn-secondary">← Back to Blogs</a>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- FOLLOWERS / FOLLOWING MODALS -->
+  <!-- Blur Overlay + Modal -->
+  <div id="overlay" class="modal-backdrop" style="display:none;"></div>
+
+  <div id="followersModal" class="modal-box" style="display:none;">
+    <h5>Followers</h5>
+    <% followers.forEach(f=> { %>
+      <a href="/user/<%= f.id %>" class="d-block mb-2 text-decoration-none">
+        <img src="<%= f.profile_photo_url || '/default.jpg' %>" class="rounded-circle me-2" width="30" height="30">
+        <%= f.username %>
+      </a>
+      <% }) %>
+        <button class="btn btn-sm btn-secondary mt-2" onclick="toggleModal('followersModal')">Close</button>
+  </div>
+
+  <div id="followingModal" class="modal-box" style="display:none;">
+    <h5>Following</h5>
+    <% following.forEach(f=> { %>
+      <a href="/user/<%= f.id %>" class="d-block mb-2 text-decoration-none">
+        <img src="<%= f.profile_photo_url || '/default.jpg' %>" class="rounded-circle me-2" width="30" height="30">
+        <%= f.username %>
+      </a>
+      <% }) %>
+        <button class="btn btn-sm btn-secondary mt-2" onclick="toggleModal('followingModal')">Close</button>
+  </div>
+
+  <!-- Modal toggle script -->
+  <script>
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      const overlay = document.getElementById('overlay');
+      const isVisible = modal.style.display === 'block';
+      modal.style.display = isVisible ? 'none' : 'block';
+      overlay.style.display = isVisible ? 'none' : 'block';
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beyond90</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/style/home.css">
+
+</head>
+
+<body>
+  <div class="hero-wrapper">
+    <!-- 3D Rotating Carousel -->
+    <div class="carousel-container">
+      <div class="carousel3D">
+        <% const images = [
+          "mbappe", "beckham", "bellingham", "brahim", "valverde", "vini", "rudiger", "iceland", "rooney", "ole",
+          "maradona", "kaka", "7-1", "zlatan", "rvp", "baggio", "iniesta", "balotelli", "messi", "scholes",
+          "materazzi-ruiCosta", "cristiano", "maradona-handOfGod", "zidane-headButt","sneijder","xana"
+        ];
+        const wideImages = ["7-1", "zidane-headButt", "rvp", "iceland", "baggio","rooney", "ole"];
+        const angle = 360 / images.length;
+        images.forEach((name, i) => {
+          const isWide = wideImages.includes(name);
+        %>
+          <div class="player-card <%= isWide ? 'wide' : '' %>" style="transform: rotateY(<%= i * angle %>deg) translateZ(1000px);">
+            <img src="/images/<%= name %>.jpg" alt="<%= name %>">
+          </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Foreground Text -->
+    <div class="intro-content">
+      <h1 class="tagline">
+        <span class="highlight">Unleash</span> Your Voice.<br />
+        Dive Into the Game.
+      </h1>
+      <a href="/login" class="btn btn-primary start-btn">Get Started</a>
+    </div>
+  </div>
+</body>
+
+</html>

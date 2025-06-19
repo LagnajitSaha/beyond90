@@ -1,0 +1,154 @@
+/* ========== General Styling ========== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Light Mode */
+body.light-mode {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+a {
+  text-decoration: none;
+}
+
+.navbar-gradient {
+  background: linear-gradient(to right, #000428, #004e92);
+}
+
+.custom-navbar .navbar-brand {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: white;
+}
+
+.custom-navbar .brand-slogan {
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+/* ========== Button Animations ========== */
+.btn-animated {
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-animated:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+}
+
+/* ========== Blog Card ========== */
+.blog-card {
+  background-color: white;
+  transition: transform 0.2s;
+}
+.blog-card:hover {
+  transform: translateY(-3px);
+}
+
+body.dark-mode .blog-card {
+  background-color: #1e1e1e;
+}
+.card .rounded-circle {
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.card a.text-dark:hover {
+  color: #0d6efd; /* Bootstrap primary */
+  text-decoration: underline;
+}
+
+/* ========== Sticky Post Form ========== */
+.sticky-top {
+  position: sticky;
+  top: 20px;
+  z-index: 1020;
+}
+
+#postFormBox {
+  background-color: white;
+}
+
+body.dark-mode #postFormBox {
+  background-color: #1e1e1e;
+}
+
+/* ========== Inputs and Forms ========== */
+input, textarea, select {
+  background-color: white;
+  color: #212529;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+/* Placeholder style */
+input::placeholder,
+textarea::placeholder {
+  color: #888;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #aaa;
+}
+
+/* Comment & Reply Input */
+form input.form-control,
+form textarea.form-control {
+  border: 1px solid #ced4da;
+}
+
+form input.form-control:focus,
+form textarea.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 5px rgba(0,123,255,.5);
+}
+
+/* Small adjustments for spacing */
+.ms-3, .ms-4 {
+  margin-left: 1rem !important;
+}
+
+/* Reply text */
+.text-muted small {
+  font-size: 0.85rem;
+}
+
+.dropdown-menu {
+  min-width: 8rem;
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.modal-box {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  z-index: 101;
+  border-radius: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beyond90</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <link href="/style/main.css" rel="stylesheet" />
+</head>
+
+<body class="light-mode">
+  <nav class="navbar navbar-expand-lg navbar-gradient custom-navbar">
+    <div class="container-fluid d-flex align-items-center gap-3">
+      <a class="navbar-brand d-flex flex-column" href="/blogs">
+        <span class="brand-title">Beyond90</span>
+        <span class="brand-slogan">Fuel The Passion.</span>
+      </a>
+
+      <div class="dropdown ms-auto">
+        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <%= user.username %>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="/user">Profile</a></li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li><a class="dropdown-item" href="/logout">Logout</a></li>
+        </ul>
+      </div>
+
+      <button id="modeToggle" class="btn btn-outline-light ms-2">Toggle Mode</button>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-5">
+    <div class="row">
+      <!-- Blog Posts -->
+      <div class="col-lg-8 mt-4">
+        <div class="mb-4">
+          <a href="/blogs" class="btn btn-primary btn-sm me-2 mb-2">All</a>
+          <% categories.forEach(cat=> { %>
+            <a href="/category/<%= cat.slug %>" class="btn btn-outline-primary btn-sm me-2 mb-2">
+              <%= cat.name %>
+            </a>
+            <% }) %>
+        </div>
+
+        <% posts.sort((a, b)=> new Date(b.created_at) - new Date(a.created_at)).forEach(post => { %>
+          <div class="card mb-4 shadow-sm transition-card">
+            <div class="d-flex align-items-center mb-2">
+              <% if (post.profile_photo_url) { %>
+                <img src="<%= post.profile_photo_url %>" alt="User Photo" class="rounded-circle me-2" width="40"
+                  height="40">
+                <% } else { %>
+                  <div class="rounded-circle bg-secondary me-2" style="width: 40px; height: 40px;"></div>
+                  <% } %>
+                    <strong><a href="/user/<%= post.user_id %>" class="text-decoration-none text-dark">
+                        <%= post.username %>
+                      </a></strong>
+            </div>
+
+            <div class="card-body">
+              <h5 class="hover-scale">
+                <%= post.title %>
+              </h5>
+              <p>
+                <%= post.body %>
+              </p>
+
+              <% if (post.image) { %>
+                <img src="<%= post.image %>" alt="Post image" class="img-fluid rounded mb-3" />
+                <% } %>
+
+                  <p class="text-muted small">
+                    Category: <%= post.category %> | <%= new Date(post.created_at).toLocaleString() %>
+                  </p>
+
+                  <% if (user && user.id===post.user_id) { %>
+                    <form action="/delete/<%= post.id %>" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger btn-sm animate-button">Delete</button>
+                    </form>
+                    <button class="btn btn-secondary btn-sm animate-button"
+                      onclick="toggleEditForm(<%= post.id %>)">Edit</button>
+                    <% } %>
+
+                      <button class="btn btn-outline-primary btn-sm ms-2 animate-button"
+                        onclick="toggleComments(<%= post.id %>)">Comments</button>
+                      <button class="btn btn-outline-success btn-sm ms-2 animate-button"
+                        onclick="likePost(<%= post.id %>, this)">
+                        👍 <span>
+                          <%= post.likescount %>
+                        </span>
+                      </button>
+                      <button class="btn btn-outline-warning btn-sm ms-2 animate-button"
+                        onclick="bookmarkPost(<%= post.id %>, this)">
+                        🔖 <span>
+                          <%= post.bookmarkcount %>
+                        </span>
+                      </button>
+
+                      <!-- Edit Form -->
+                      <div id="edit-form-<%= post.id %>" style="display:none;" class="mt-3">
+                        <form action="/edit/<%= post.id %>" method="POST">
+                          <input type="text" name="postTitle" value="<%= post.title %>" required
+                            class="form-control mb-2" />
+                          <textarea name="postBody" required class="form-control mb-2"><%= post.body %></textarea>
+                          <input type="submit" class="btn btn-primary btn-sm me-2" value="Update" />
+                          <button type="button" class="btn btn-light btn-sm"
+                            onclick="toggleEditForm(<%= post.id %>)">Cancel</button>
+                        </form>
+                      </div>
+
+                      <!-- Comments Section -->
+                      <div id="comments-<%= post.id %>" style="display:none;" class="mt-3">
+                        <% post.comments.forEach(comment=> { %>
+                          <div class="ms-3">
+                            <strong><a href="/user/<%= comment.user_id %>">
+                                <%= comment.username %>
+                              </a></strong>: <%= comment.content %>
+                              <button class="btn btn-link btn-sm p-0 ms-2"
+                                onclick="toggleReplyForm(<%= comment.id %>)">Reply</button>
+
+                              <div class="ms-4">
+                                <% comment.replies.forEach(reply=> { %>
+                                  <div class="text-muted small"><strong><a href="/user/<%= reply.user_id %>">
+                                        <%= reply.username %>
+                                      </a></strong>: <%= reply.reply_body %>
+                                  </div>
+                                  <% }) %>
+                              </div>
+
+                              <form action="/reply/<%= comment.id %>" method="POST" id="reply-form-<%= comment.id %>"
+                                style="display:none;" class="ms-4">
+                                <input type="text" name="replyContent" class="form-control form-control-sm mb-1"
+                                  placeholder="Reply..." required>
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Reply</button>
+                              </form>
+                          </div>
+                          <% }) %>
+
+                            <form action="/comment/<%= post.id %>" method="POST" class="mt-2">
+                              <input type="text" name="commentBody" placeholder="Add comment..." required
+                                class="form-control">
+                              <button type="submit" class="btn btn-sm btn-outline-primary mt-1">Comment</button>
+                            </form>
+                      </div>
+            </div>
+          </div>
+          <% }) %>
+      </div>
+
+      <!-- New Post (Sticky Sidebar) -->
+      <div class="col-lg-4 sticky-top mt-5" style="top: 80px;">
+        <div class="card shadow-sm p-3">
+          <h4 class="mb-3 text-success">Write a New Post</h4>
+          <form action="/submit" method="POST" enctype="multipart/form-data">
+            <input type="text" name="postTitle" placeholder="Post Title" required class="form-control mb-3" />
+            <textarea name="postBody" placeholder="Write your post here..." required class="form-control mb-3"
+              rows="5"></textarea>
+            <select name="postCategory" class="form-select mb-3" required>
+              <option disabled selected>Select Category</option>
+              <% categories.forEach(cat=> { %>
+                <option value="<%= cat.name %>">
+                  <%= cat.name %>
+                </option>
+                <% }) %>
+            </select>
+            <input type="file" name="postImage" accept="image/*" class="form-control mb-3" />
+            <button type="submit" class="btn btn-success w-100 animate-button">
+              <i class="bi bi-send me-2"></i> Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function toggleEditForm(postId) {
+      const form = document.getElementById("edit-form-" + postId);
+      form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleComments(postId) {
+      const div = document.getElementById("comments-" + postId);
+      div.style.display = div.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleReplyForm(commentId) {
+      const form = document.getElementById("reply-form-" + commentId);
+      form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+
+    async function likePost(postId, btn) {
+      try {
+        const res = await fetch(`/posts/${postId}/like`, { method: "POST" });
+        const data = await res.json();
+        if (data.likes !== undefined) {
+          btn.querySelector("span").innerText = data.likes;
+        }
+      } catch (err) {
+        alert("You must be logged in to like posts.");
+      }
+    }
+
+    async function bookmarkPost(postId, btn) {
+      try {
+        const res = await fetch(`/posts/${postId}/bookmark`, { method: "POST" });
+        const data = await res.json();
+        if (data.bookmarks !== undefined) {
+          btn.querySelector("span").innerText = data.bookmarks;
+        }
+      } catch (err) {
+        alert("You must be logged in to bookmark posts.");
+      }
+    }
+
+    document.getElementById("modeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      document.body.classList.toggle("light-mode");
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <%- include("partials/footer.ejs") %>
+</body>
+
+</html>

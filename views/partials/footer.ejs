@@ -1,0 +1,42 @@
+<footer class="footer bg-dark text-white mt-5 p-3 text-center">
+  <div>
+    <p>&copy; <%= new Date().getFullYear() %> Lagnajit Saha. All rights reserved.</p>
+    <!-- social icons -->
+  </div>
+
+  <div class="mt-2">
+    <button id="like-btn" class="btn btn-outline-light">
+      <i class="bi bi-hand-thumbs-up"></i> Like <span id="like-count"></span>
+    </button>
+    <p class="mt-2">Total visits : <span id="visitor-count"></span></p>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const likeBtn = document.getElementById("like-btn");
+    const likeCount = document.getElementById("like-count");
+    const visitorCount = document.getElementById("visitor-count");
+
+    try {
+      const res = await fetch("/footer-stats");
+      const data = await res.json();
+      likeCount.textContent = data.likes;
+      visitorCount.textContent = data.visitors;
+    } catch (err) {
+      console.error("Failed to load footer stats");
+    }
+
+    likeBtn.addEventListener("click", async () => {
+      try {
+        const res = await fetch("/like-website", { method: "POST" });
+        const data = await res.json();
+        likeCount.textContent = data.likes;
+        likeBtn.classList.toggle("btn-success");
+        likeBtn.classList.toggle("btn-outline-light");
+      } catch (err) {
+        alert("You must be logged in to like this site.");
+      }
+    });
+  });
+</script>

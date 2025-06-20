@@ -14,13 +14,18 @@ dotenv.config();
 
 const app = express();
 app.use("/uploads", express.static("uploads"));
+app.set("trust proxy", 1); // Trust first proxy for secure cookies
 
 app.use(
   session({
     secret: process.env.BLOG_WORD,
+    
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 24 * 60 * 60 * 1000, secure: false }
+    cookie: {secure: true, // Use true if you're serving over HTTPS (Render does)
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      sameSite: "lax", }
   })
 );
 app.use(passport.initialize());

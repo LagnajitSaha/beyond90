@@ -660,9 +660,18 @@ passport.use("google", new GoogleStrategy({
   }
 ));
 
-passport.serializeUser((user, cb) => cb(null, user));
-passport.deserializeUser((user, cb) => cb(null, user));
+passport.serializeUser((user, cb) => {
+  cb(null, user.id);
+});
 
+passport.deserializeUser(async (id, cb) => {
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+    cb(null, result.rows[0]);
+  } catch (err) {
+    cb(err);
+  }
+});
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

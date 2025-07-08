@@ -21,11 +21,12 @@ app.use(
     secret: process.env.BLOG_WORD,
     
     resave: false,
-    saveUninitialized: true,
-    cookie: {secure: true, // Use true if you're serving over HTTPS (Render does)
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // Use true if you're serving over HTTPS (Render does)
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: "lax", }
+      sameSite: "none", }
   })
 );
 app.use(passport.initialize());
@@ -677,7 +678,7 @@ passport.deserializeUser(async (id, cb) => {
     cb(err);
   }
 });
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

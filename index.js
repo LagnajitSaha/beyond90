@@ -15,29 +15,31 @@ dotenv.config();
 const app = express();
 app.use("/uploads", express.static("uploads"));
 app.set("trust proxy", 1); // Trust first proxy for secure cookies
-
+app.set("view engine", "ejs");
 app.use(
   session({
     secret: process.env.BLOG_WORD,
-    
+
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: true, // Use true if you're serving over HTTPS (Render does)
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: "none", }
+      sameSite: "none",
+    }
   })
 );
 app.use(passport.initialize());
 app.use(passport.session());
 
 const db = new pg.Client({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: process.env.PG_PORT,
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
+  ssl: { rejectUnauthorized: false },
 });
 db.connect();
 

@@ -33,13 +33,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// const db = new pg.Client({
+//   user: process.env.PGUSER,
+//   host: process.env.PGHOST,
+//   database: process.env.PGDATABASE,
+//   password: process.env.PGPASSWORD,
+//   port: process.env.PGPORT,
+//   ssl: { rejectUnauthorized: false },
+// });
 const db = new pg.Client({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-  ssl: { rejectUnauthorized: false },
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 db.connect();
 

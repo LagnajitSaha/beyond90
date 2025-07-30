@@ -1,11 +1,11 @@
-<img width="1348" height="621" alt="image" src="https://github.com/user-attachments/assets/fb6b24ba-7488-494b-836c-3105c8472f86" /># ⚽ Beyond90 – Full-Stack Football Blog Platform
+<img width="1348" height="621" alt="image" src="https://github.com/user-attachments/assets/fb6b24ba-7488-494b-836c-3105c8472f86" />
 
 **Beyond90** is a powerful, feature-rich football blogging platform where users can express their passion for the game. It supports posting, commenting, liking, replying, bookmarking, following other users, and more—all within a sleek, Real Madrid–inspired UI. The app is built using **Node.js**, **Express**, **PostgreSQL**, and **EJS**, and is fully deployed with **Render**.
 
 ## 🌍 Live Demo
 
-**[Live Site →](https://beyond90.onrender.com)**  
-*(Replace with your actual Render link)*
+**[Deployed Link](https://beyond90.onrender.com)**  
+
 
 ---
 

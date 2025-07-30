@@ -83,10 +83,8 @@ Maintenance DB: your_db
 
 Password: your_password
 
+```
 
-## 👨‍💻 Author
+## Author
 
 [Lagnajit Saha](https://github.com/LagnajitSaha)
-
-
-
